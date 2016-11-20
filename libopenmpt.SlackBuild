@@ -1,0 +1,109 @@
+#!/bin/sh
+#
+# Slackware build script for LibOpenMPT
+# Copyright (C) 2016 Georgi D. Sotirov <gdsotirov@dir.bg>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+# Visit SlackPack at http://sotirov-bg.net/slackpack/
+#
+# $Id: libopenmpt.SlackBuild,v 1.1 2016/11/20 13:41:07 gsotirov Exp $
+#
+
+. ../../slack-package.conf
+
+NAME=libopenmpt
+VERSION=0.2.7299
+VER_BETA=20.2
+VER_FULL="${VERSION}-beta${VER_BETA}"
+ARCH=${ARCH:-i586}
+BUILD=${BUILD:-1}
+
+TMP=${TMP:-/tmp}
+CWD=${CWD:-`pwd`}
+
+if [ ! -e $TMP ]; then
+  mkdir -p $TMP # location to build the source
+fi
+
+SRC=$TMP/${NAME}-${VERSION}
+if [ -e $SRC -a -d $SRC ]; then
+  echo "Source directory '$SRC' already exists! Plaese, move it or remove it."
+  exit 1
+fi
+
+PKG=$TMP/package-${NAME}
+if [ -e $PKG -a -d $PKG ]; then
+  echo "Package creation directory '$PKG' already exists! Please, move it or remove it."
+  exit 2
+fi
+mkdir -p $PKG
+
+# Extract the source
+cd $TMP
+tar -xvf $CWD/${NAME}-${VER_FULL}.tar.?z* || exit 3
+cd $SRC
+fix_source
+
+# Build & install
+CFLAGS="${SLKCFLAGS}" \
+CPPFLAGS="${SLKCFLAGS}" \
+make DYNLINK=1 \
+     SHARED_LIB=1 \
+     STATIC_LIB=0 \
+     EXAMPLES=1 \
+     DEBUG=0 \
+     OPTIMIZE=1 \
+     OPENMPT123=1 \
+     VERBOSE=2 -j4 || exit 5
+make DESTDIR=$PKG \
+     PREFIX=/usr \
+     MANDIR=/usr/man \
+     STATIC_LIB=0 \
+     EXAMPLES=1 \
+     OPENMPT123=1 \
+     install || exit 6
+# Prepare
+bin_perms $PKG
+( cd $PKG; strip_bin; strip_lib )
+( cd $SRC; create_docs $PKG ${NAME}-${VERSION} )
+#( cd $PKG; mv usr/share/doc/${NAME}/* usr/doc/${NAME}-${VERSION}; rm -rf usr/share )
+( cd $PKG/usr/doc/${NAME}-${VERSION}; mv LICENSE COPYING; mv README.md README )
+gzip_man $PKG
+
+mkdir -p $PKG/install
+( cd $PKG; mv usr/share/doc/${NAME}/* usr/doc/${NAME}-${VERSION}; rm -rf usr/share )
+install -m 644 $CWD/slack-required $PKG/install/slack-required
+
+SBDIR=$PKG/usr/src/slackbuilds/${NAME}-${VERSION}
+install -m 755 -d -D $SBDIR
+install -m 644 $CWD/slack-desc         $SBDIR/slack-desc
+install -m 644 $CWD/slack-required     $SBDIR/slack-required
+install -m 644 $CWD/${NAME}.SlackBuild $SBDIR/${NAME}.SlackBuild
+
+# Assemble
+cd $PKG
+PKGNAME=${NAME}-${VERSION}-${ARCH}-${BUILD}${MYIN}
+makepkg -l y -c n -p $PKG_DIR/${PKGNAME}.txz
+cd $PKG_DIR
+md5sum ${PKGNAME}.txz > ${PKGNAME}.txz.md5
+cat $PKG/install/slack-desc > $PKG_DIR/${PKGNAME}.txt
+
+# Clean up (optionally)
+if [ "$1" == "--cleanup" ]; then
+  rm -rf $SRC
+  rm -rf $PKG
+fi
+
