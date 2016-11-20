@@ -19,7 +19,7 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: libopenmpt.SlackBuild,v 1.1 2016/11/20 13:41:07 gsotirov Exp $
+# $Id: libopenmpt.SlackBuild,v 1.2 2016/11/20 14:49:44 gsotirov Exp $
 #
 
 . ../../slack-package.conf
@@ -38,7 +38,7 @@ if [ ! -e $TMP ]; then
   mkdir -p $TMP # location to build the source
 fi
 
-SRC=$TMP/${NAME}-${VERSION}
+SRC=$TMP/${NAME}-${VERSION}-autotools
 if [ -e $SRC -a -d $SRC ]; then
   echo "Source directory '$SRC' already exists! Plaese, move it or remove it."
   exit 1
@@ -53,28 +53,26 @@ mkdir -p $PKG
 
 # Extract the source
 cd $TMP
-tar -xvf $CWD/${NAME}-${VER_FULL}.tar.?z* || exit 3
+tar -xvf $CWD/${NAME}-${VER_FULL}-autotools.tar.?z* || exit 3
 cd $SRC
 fix_source
 
+# Configure
+CFLAGS="$SLKCFLAGS" \
+CXXFLAGS="$SLKCFLAGS" \
+./configure --build=${ARCH}-slackware-linux \
+            --host=${ARCH}-slackware-linux \
+            --prefix=/usr \
+            --libdir=/usr/lib${LIBDIRSUFFIX} \
+            --docdir=/usr/doc/${NAME}-${VERSION} \
+            --mandir=/usr/man \
+            --enable-shared=yes \
+            --enable-static=no || exit 4
+
 # Build & install
-CFLAGS="${SLKCFLAGS}" \
-CPPFLAGS="${SLKCFLAGS}" \
-make DYNLINK=1 \
-     SHARED_LIB=1 \
-     STATIC_LIB=0 \
-     EXAMPLES=1 \
-     DEBUG=0 \
-     OPTIMIZE=1 \
-     OPENMPT123=1 \
-     VERBOSE=2 -j4 || exit 5
-make DESTDIR=$PKG \
-     PREFIX=/usr \
-     MANDIR=/usr/man \
-     STATIC_LIB=0 \
-     EXAMPLES=1 \
-     OPENMPT123=1 \
-     install || exit 6
+make VERBOSE=2 -j4 || exit 5
+make DESTDIR=$PKG install || exit 6
+
 # Prepare
 bin_perms $PKG
 ( cd $PKG; strip_bin; strip_lib )
@@ -84,7 +82,7 @@ bin_perms $PKG
 gzip_man $PKG
 
 mkdir -p $PKG/install
-( cd $PKG; mv usr/share/doc/${NAME}/* usr/doc/${NAME}-${VERSION}; rm -rf usr/share )
+install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
 install -m 644 $CWD/slack-required $PKG/install/slack-required
 
 SBDIR=$PKG/usr/src/slackbuilds/${NAME}-${VERSION}
