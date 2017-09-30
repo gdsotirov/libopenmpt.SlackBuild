@@ -19,15 +19,13 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: libopenmpt.SlackBuild,v 1.9 2017/08/13 08:43:44 gsotirov Exp $
+# $Id: libopenmpt.SlackBuild,v 1.10 2017/09/30 18:43:23 gsotirov Exp $
 #
 
 . ../../slack-package.conf
 
 NAME=libopenmpt
-VERSION=0.2.8760
-VER_BETA=27
-VER_FULL="${VERSION}-beta${VER_BETA}"
+VERSION=0.3.1
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
@@ -38,7 +36,7 @@ if [ ! -e $TMP ]; then
   mkdir -p $TMP # location to build the source
 fi
 
-SRC=$TMP/${NAME}-${VERSION//8760/8762}-autotools
+SRC=$TMP/${NAME}-${VERSION}+release.autotools
 if [ -e $SRC -a -d $SRC ]; then
   echo "Source directory '$SRC' already exists! Plaese, move it or remove it."
   exit 1
@@ -53,7 +51,7 @@ mkdir -p $PKG
 
 # Extract the source
 cd $TMP
-tar -xvf $CWD/${NAME}-${VER_FULL}-autotools.tar.?z* || exit 3
+tar -xvf $CWD/${NAME}-${VERSION}+release.autotools.tar.?z* || exit 3
 cd $SRC
 fix_source
 
