@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Slackware build script for LibOpenMPT
-# Copyright (C) 2016-2017 Georgi D. Sotirov <gdsotirov@dir.bg>
+# Copyright (C) 2016-2018 Georgi D. Sotirov <gdsotirov@dir.bg>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,13 +19,13 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: libopenmpt.SlackBuild,v 1.12 2017/11/19 10:53:52 gsotirov Exp $
+# $Id: libopenmpt.SlackBuild,v 1.13 2018/01/28 19:13:47 gsotirov Exp $
 #
 
 . ../../slack-package.conf
 
 NAME=libopenmpt
-VERSION=0.3.3
+VERSION=0.3.5
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
