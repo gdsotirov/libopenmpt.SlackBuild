@@ -19,13 +19,13 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: libopenmpt.SlackBuild,v 1.14 2018/02/07 14:16:01 gsotirov Exp $
+# $Id: libopenmpt.SlackBuild,v 1.15 2018/03/11 20:18:18 gsotirov Exp $
 #
 
 . ../../slack-package.conf
 
 NAME=libopenmpt
-VERSION=0.3.6
+VERSION=0.3.7
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
