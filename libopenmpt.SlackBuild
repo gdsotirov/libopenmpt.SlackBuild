@@ -23,7 +23,7 @@
 . ../../slack-package.conf
 
 NAME=libopenmpt
-VERSION=0.3.38
+VERSION=0.3.39
 ARCH=${ARCH:-i586}
 BUILD=${BUILD:-1}
 
